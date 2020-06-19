@@ -116,6 +116,10 @@ public:
   
   AliMUONPad* Pad(Int_t index) const;
   
+  AliMUONPad* FindPad(UInt_t uid) const;
+
+  void SortPads() { fPads.Sort(); }
+
   virtual void Paint(Option_t* opt="");
   
   /// Return (x,y) of that cluster

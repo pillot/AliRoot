@@ -12,6 +12,7 @@
 //  Author Alexander Zinchenko, JINR Dubna; Laurent Aphecetche, SUBATECH
 //
 
+#include <TFile.h>
 class TH2D;
 class TMinuit;
 
@@ -51,6 +52,7 @@ public:
 
   virtual void Paint(Option_t* opt="");
 
+  void DrawPixels(UInt_t firstPadId);
   // Status flags for pads
 
                /// Return pad "basic" state flag
@@ -159,6 +161,8 @@ private:
   Double_t fLowestPixelCharge; //!<! see AliMUONRecoParam
   Double_t fLowestPadCharge; //!<! see AliMUONRecoParam
   Double_t fLowestClusterCharge; //!<! see AliMUONRecoParam
+
+  TFile *fFile = nullptr;
   
   ClassDef(AliMUONClusterFinderMLEM,0) // cluster finder in MUON arm of ALICE
 };

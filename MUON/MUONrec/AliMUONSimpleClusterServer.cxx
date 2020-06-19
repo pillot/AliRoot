@@ -37,6 +37,7 @@
 #include "AliMpPad.h"
 #include "AliMpSegmentation.h"
 #include "AliMpVSegmentation.h"
+#include "AliMpPlaneType.h"
 #include <Riostream.h>
 #include <TObjArray.h>
 #include <TString.h>
@@ -210,7 +211,7 @@ AliMUONSimpleClusterServer::Clusterize(Int_t chamberId,
           
           Double_t xg, yg, zg;
           fkTransformer.Local2Global(detElemId, 
-                                    cluster->Position().X(), cluster->Position().Y(), 
+                                    Float_t(cluster->Position().X()), Float_t(cluster->Position().Y()), 
                                     0, xg, yg, zg);
           rawCluster->SetXYZ(xg, yg, zg);
           rawCluster->SetErrXY(recoParam->GetDefaultNonBendingReso(chamberId),recoParam->GetDefaultBendingReso(chamberId));
@@ -359,10 +360,11 @@ AliMUONSimpleClusterServer::UseDigits(TIter& next, AliMUONVDigitStore* digitStor
       fPads[cathode]->Add(detElemId,padArray);
     }
     
-    AliMUONPad* mpad = new AliMUONPad(detElemId,cathode,
-                    ix,iy,pad.GetPositionX(),pad.GetPositionY(),
-                    pad.GetDimensionX(),pad.GetDimensionY(),
-                    d->Charge());
+    AliMUONPad* mpad = new AliMUONPad(detElemId, cathode,
+                                      ix, iy, round(pad.GetPositionX() * 1.e4) / 1.e4, round(pad.GetPositionY() * 1.e4) / 1.e4,
+                                      round(pad.GetDimensionX() * 1.e6) / 1.e6, round(pad.GetDimensionY() * 1.e6) / 1.e6,
+                                      d->Charge());
+    mpad->SetPlane((seg->PlaneType() == AliMp::kBendingPlane) ? 0 : 1);
     if ( d->IsSaturated() ) mpad->SetSaturated(kTRUE);
     mpad->SetUniqueID(d->GetUniqueID());
     padArray->Add(mpad);      

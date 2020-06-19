@@ -77,6 +77,7 @@ fIsSaturated(kFALSE),
 fIsReal(kFALSE),
 fClusterId(-1),
 fCathode(-1),
+fPlane(-1),
 fDetElemId(-1),
 fIx(-1),
 fIy(-1),
@@ -100,6 +101,7 @@ fIsSaturated(kFALSE),
 fIsReal(kFALSE),
 fClusterId(-1),
 fCathode(-1),
+fPlane(-1),
 fDetElemId(-1),
 fIx(-1),
 fIy(-1),
@@ -122,6 +124,7 @@ fIsSaturated(kFALSE),
 fIsReal(kFALSE),
 fClusterId(-1),
 fCathode(-1),
+fPlane(-1),
 fDetElemId(-1),
 fIx(-1),
 fIy(-1),
@@ -143,6 +146,7 @@ fIsSaturated(kFALSE),
 fIsReal(kFALSE),
 fClusterId(-1),
 fCathode(-1),
+fPlane(-1),
 fDetElemId(-1),
 fIx(-1),
 fIy(-1),
@@ -261,6 +265,26 @@ AliMUONPad::Compare(const TObject* obj) const
     if (Charge() == pad->Charge()) return 0;
     return ( Charge() < pad->Charge() ) ? 1:-1;
   }
+
+  // sort in plane then in increasing y position if same plane then in increasing x position if same y
+  if (fPlane < pad->fPlane) {
+    return -1;
+  } else if (fPlane > pad->fPlane) {
+    return 1;
+  } else {
+    if (Y() < pad->Y() - 1.e-3) {
+      return -1;
+    } else if (Y() > pad->Y() + 1.e-3) {
+      return 1;
+    } else {
+      if (X() < pad->X() - 1.e-3) {
+        return -1;
+      } else if (X() > pad->X() + 1.e-3) {
+        return 1;
+      }
+    }
+  }
+  return 0;
 
   if ( DetElemId() > pad->DetElemId() )
   {

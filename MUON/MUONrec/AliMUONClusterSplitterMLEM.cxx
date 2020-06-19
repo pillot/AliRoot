@@ -31,7 +31,6 @@
 
 #include "AliMUONCluster.h"
 #include "AliMUONPad.h"
-#include "AliMUONPad.h"
 #include "AliMUONConstants.h"
 #include "AliMpDEManager.h"
 #include "AliMUONMathieson.h"
@@ -279,12 +278,13 @@ AliMUONClusterSplitterMLEM::Fit(const AliMUONCluster& cluster,
   for (Int_t i = 0; i < mult; ++i ) 
   {
     AliMUONPad* pad = cluster.Pad(i);
-    if ( !pad->IsReal() ) ++nVirtual;
     //if ( pad->Status() !=1 || pad->IsSaturated() ) continue;
     if ( pad->Status() != AliMUONClusterFinderMLEM::GetUseForFitFlag() ) continue;
     if ( pad->IsReal() )
     {
       ++npads;
+    } else {
+      ++nVirtual;
     }
   }
   
@@ -474,7 +474,7 @@ AliMUONClusterSplitterMLEM::Fit(const AliMUONCluster& cluster,
     }
       
     // Try new algorithm
-    min = nLoop = 1; stepMax = func2[1] = derMax = 999999; nFail = 0;
+    min = nLoop = 1; stepMax = func2[1] = derMax = 999999; nFail = 0; shiftSave = 0.;
       
     while (1) 
     {
@@ -619,7 +619,8 @@ AliMUONClusterSplitterMLEM::Fit(const AliMUONCluster& cluster,
 	if (nFail > 10) 
         {
 	  param[idMax] -= shift[idMax];
-	  shift[idMax] = 4 * shiftSave * (gRandom->Rndm(0) - 0.5);
+//	  shift[idMax] = 4 * shiftSave * (gRandom->Rndm(0) - 0.5);
+	  shift[idMax] = 4 * shiftSave * 0.01;
 	  param[idMax] += shift[idMax];
 	}
       }      
@@ -643,13 +644,13 @@ AliMUONClusterSplitterMLEM::Fit(const AliMUONCluster& cluster,
     if (nInX == 1) {
       // One pad per direction 
       //for (Int_t i=0; i<fNpar; ++i) if (i == 0 || i == 2 || i == 5) param0[min][i] = xPad;
-      for (Int_t i=0; i<fNpar; ++i) if (i == 0 || i == 2 || i == 5) 
+      for (Int_t i=0; i<fNpar; ++i) if (i == 0 || i == 3 || i == 6) 
 	param0[min][i] = xyCand[0][0];
     }
     if (nInY == 1) {
       // One pad per direction 
       //for (Int_t i=0; i<fNpar; ++i) if (i == 1 || i == 3 || i == 6) param0[min][i] = yPad;
-      for (Int_t i=0; i<fNpar; ++i) if (i == 1 || i == 3 || i == 6) 
+      for (Int_t i=0; i<fNpar; ++i) if (i == 1 || i == 4 || i == 7) 
 	param0[min][i] = xyCand[0][1];
     }
       
@@ -985,20 +986,17 @@ AliMUONClusterSplitterMLEM::Split(const AliMUONCluster& cluster,
       }
       
       // Sort the clusters (move to the right the used ones)
-      Int_t beg = 0, end = nCoupled - 1;
+      Int_t beg = 0, end = nCoupled;
       while (beg < end) 
       {
         if (clustNumb[beg] >= 0) { ++beg; continue; }
-        for (Int_t j = end; j > beg; --j) 
+        indx = clustNumb[beg];
+        for (Int_t j = beg + 1; j < end; ++j) 
         {
-          if (clustNumb[j] < 0) continue;
-          end = j - 1;
-          indx = clustNumb[beg];
-          clustNumb[beg] = clustNumb[j];
-          clustNumb[j] = indx;
-          break;
+          clustNumb[j - 1] = clustNumb[j];
         }
-        ++beg;
+        clustNumb[end - 1] = indx;
+        --end;
       }
       
       nCoupled -= nForFit;

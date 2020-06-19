@@ -35,6 +35,8 @@ public:
              Double_t dx, Double_t dy, Double_t charge);
   virtual ~AliMUONPad();
 
+  void SetPlane(Int_t plane) { fPlane = plane; }
+
   /// \brief Backup charge 
   /// Usefull if clustering somehow plays with the charge, this one is the "original" one
   void BackupCharge() { fChargeBackup = fCharge; }
@@ -151,6 +153,7 @@ private:
   Bool_t fIsReal; ///< whether this is a real pad or a virtual one
   Int_t fClusterId; ///< cluster id this pad belongs to (-1 if not attached to a cluster)
   Int_t fCathode; ///< cathode number
+  Int_t fPlane; ///< 0 = bending, 1 = non-bending, -1 = none
   Int_t fDetElemId; ///< detection element id
   Int_t fIx; ///< x-index
   Int_t fIy; ///< y-index
