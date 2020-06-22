@@ -617,6 +617,20 @@ AliMUONCluster::Pad(Int_t index) const
   return 0x0;
 }
 
+//_____________________________________________________________________________
+AliMUONPad* AliMUONCluster::FindPad(UInt_t uid) const
+{
+  /// Returns the index-th pad
+  
+  for ( Int_t i = 0; i <= fPads.GetLast(); ++i ) {
+    AliMUONPad* pad = static_cast<AliMUONPad*>(fPads.UncheckedAt(i));
+    if (pad->GetUniqueID() == uid)
+      return pad;
+  }
+
+  return 0x0;
+}
+
 
 //_____________________________________________________________________________
 void

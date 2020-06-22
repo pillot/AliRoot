@@ -279,12 +279,13 @@ AliMUONClusterSplitterMLEM::Fit(const AliMUONCluster& cluster,
   for (Int_t i = 0; i < mult; ++i ) 
   {
     AliMUONPad* pad = cluster.Pad(i);
-    if ( !pad->IsReal() ) ++nVirtual;
     //if ( pad->Status() !=1 || pad->IsSaturated() ) continue;
     if ( pad->Status() != AliMUONClusterFinderMLEM::GetUseForFitFlag() ) continue;
     if ( pad->IsReal() )
     {
       ++npads;
+    } else {
+      ++nVirtual;
     }
   }
   
@@ -474,7 +475,7 @@ AliMUONClusterSplitterMLEM::Fit(const AliMUONCluster& cluster,
     }
       
     // Try new algorithm
-    min = nLoop = 1; stepMax = func2[1] = derMax = 999999; nFail = 0;
+    min = nLoop = 1; stepMax = func2[1] = derMax = 999999; nFail = 0; shiftSave = 0.;
       
     while (1) 
     {
@@ -643,13 +644,13 @@ AliMUONClusterSplitterMLEM::Fit(const AliMUONCluster& cluster,
     if (nInX == 1) {
       // One pad per direction 
       //for (Int_t i=0; i<fNpar; ++i) if (i == 0 || i == 2 || i == 5) param0[min][i] = xPad;
-      for (Int_t i=0; i<fNpar; ++i) if (i == 0 || i == 2 || i == 5) 
+      for (Int_t i=0; i<fNpar; ++i) if (i == 0 || i == 3 || i == 6) 
 	param0[min][i] = xyCand[0][0];
     }
     if (nInY == 1) {
       // One pad per direction 
       //for (Int_t i=0; i<fNpar; ++i) if (i == 1 || i == 3 || i == 6) param0[min][i] = yPad;
-      for (Int_t i=0; i<fNpar; ++i) if (i == 1 || i == 3 || i == 6) 
+      for (Int_t i=0; i<fNpar; ++i) if (i == 1 || i == 4 || i == 7) 
 	param0[min][i] = xyCand[0][1];
     }
       
